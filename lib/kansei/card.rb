@@ -5,8 +5,7 @@ module Kansei
       b: 'Blue',
       g: 'Green',
       r: 'Red',
-      y: 'Yellow',
-      x: ''
+      y: 'Yellow'
     }
 
     ACTION = {
@@ -17,17 +16,14 @@ module Kansei
       f: 'Wild Draw Four'
     }
 
-    attr_reader :id
+    attr_reader :id, :colour
     alias_method :to_sym, :id
 
     def initialize(id)
-      fail "Invalid ID #{id}" unless valid? id
+      fail "Invalid ID: #{id}" unless valid? id
 
       @id = id.to_sym
-    end
-
-    def valid?(id)
-      id =~ /^([bgry][drs\d]|x[wf])$/
+      @colour = nil
     end
 
     def ==(other)
@@ -35,26 +31,67 @@ module Kansei
     end
 
     def match?(other)
-      # Other can be Card or Symbol.
-      other = other.to_sym
+      # If either has a blank suit they always match.
+      return true if !suit? || !other.suit?
 
-      # Wilds always match.
-      return true if @id[0] == 'x' || other[0] == 'x'
+      # Matching suits or faces.
+      suit == other.suit || face == other.face
+    end
 
-      # Matching suits or numbers/actions.
-      @id[0] == other[0] || @id[1] == other[1]
+    def colour=(colour)
+      if colour
+        colour = colour.to_sym
+
+        fail 'Colour can only be set on wildcards' unless wild?
+        fail %(Invalid colour: "#{colour}") unless SUIT.include? colour
+      end
+
+      @colour = colour
     end
 
     def name
-      action = @id[1].to_sym
-      action = ACTION[action] if ACTION.include? action
+      "#{suit_name} #{face_name}".lstrip
+    end
+    alias_method :to_s, :name
 
-      "#{suit} #{action}".lstrip
+    def suit_name
+      SUIT[suit] if suit?
+    end
+
+    def action_name
+      ACTION[face] if action?
+    end
+
+    def face_name
+      action_name || face
     end
 
     def suit
-      suit = SUIT[@id[0].to_sym]
-      suit if suit.length > 0
+      return @colour if wild?
+
+      @id[0].to_sym
+    end
+
+    def face
+      @id[1].to_sym
+    end
+
+    def suit?
+      SUIT.include? suit
+    end
+
+    def action?
+      ACTION.include? face
+    end
+
+    def wild?
+      @id[0] == 'x'
+    end
+
+    private
+
+    def valid?(id)
+      id =~ /\A(?:[bgry][drs\d]|x[wf])\z/
     end
   end
 end

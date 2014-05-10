@@ -7,12 +7,20 @@ module Kansei
       super
     end
 
-    def current
-      self[0]
+    alias_method :current, :first
+
+    def next
+      rotate.current
     end
 
     def change_direction
       @direction = -@direction
+
+      self
+    end
+
+    def rotate(count = 1)
+      dup.rotate! count
     end
 
     def rotate!(count = 1)

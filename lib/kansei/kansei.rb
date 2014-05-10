@@ -4,14 +4,17 @@ require_relative 'repl'
 
 # Entry point.
 module Kansei
-  game = Game.new
+  module_function
 
-  game.add_player Player.new('Player 1')
-  game.add_player Player.new('Player 2')
+  def start
+    game = Game.new
 
-  p game
+    %w(Player\ 1 Player\ 2).each { |name| game.add_player Player.new(name) }
 
-  repl = REPL.new(game)
-  repl.cmd 'status'
-  repl.start
+    repl = REPL.new(game)
+    repl.cmd 'status'
+    repl.start
+  end
 end
+
+Kansei.start if $PROGRAM_NAME == __FILE__

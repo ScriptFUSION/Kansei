@@ -25,7 +25,9 @@ module Kansei
       return @command.send(cmd, *args) if
         @command.public_methods(false).include? cmd.to_sym
 
-      "I wasn't programmed to \"#{cmd}\" :^)"
+      %[I wasn't programmed to "#{cmd}" :^)]
+    rescue ArgumentError => e
+      "#{cmd}: #{e.message}"
     end
 
     protected :parse

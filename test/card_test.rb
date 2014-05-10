@@ -21,17 +21,19 @@ class CardTest < Test::Unit::TestCase
       # Actions.
       yd: :rd, bs: :ys, rr: :gr,
       # Wilds.
-      r1: :xw, bd: :xf, xf: :bd,
-      # Coloured wilds.
-      g3: :gw, b4: :bf
-    }.each { |c1, c2| assert(Card.new(c1).match?(c2), "#{c1} == #{c2} ") }
+      r1: :xw, bd: :xf, xf: :xw
+    }.each do
+      |c1, c2| assert(Card.new(c1).match?(Card.new(c2)), "#{c1} == #{c2}")
+    end
   end
 
   def test_no_match
     {
       b0: :g1,
       gs: :rr
-    }.each { |c1, c2| assert(!Card.new(c1).match?(c2), "#{c1} != #{c2}") }
+    }.each do
+      |c1, c2| assert(!Card.new(c1).match?(Card.new(c2)), "#{c1} != #{c2}")
+    end
   end
 
   def test_name
@@ -39,15 +41,42 @@ class CardTest < Test::Unit::TestCase
     assert_equal('Yellow 0', Card.new(:y0).name)
     assert_equal('Wild', Card.new(:xw).name)
     assert_equal('Wild Draw Four', Card.new(:xf).name)
+
+    card = Card.new(:xw)
+    card.colour = :r
+    assert_equal('Red Wild', card.name)
   end
 
-  def test_suit
+  def test_suit_name
     {
       bs: 'Blue',
       gd: 'Green',
       r1: 'Red',
       y0: 'Yellow',
       xf: nil
-    }.each { |id, suit| assert_equal(suit, Card.new(id).suit) }
+    }.each { |id, suit| assert_equal(suit, Card.new(id).suit_name) }
+  end
+
+  def test_colour
+    card = Card.new(:b0)
+    assert_same(nil, card.colour)
+    assert_raises(RuntimeError) { card.colour = :b }
+
+    card = Card.new(:xw)
+    assert_same(:b, card.colour = :b)
+    assert_same(nil, card.colour = nil)
+  end
+
+  def test_coloured_wilds_match
+    card = Card.new(:xw)
+    card.colour = :b
+
+    assert(Card.new(:b0).match?(card))
+    assert(card.match?(Card.new(:b0)))
+    assert(!Card.new(:r0).match?(card))
+    assert(!card.match?(Card.new(:r0)))
+
+    card.colour = nil
+    assert(card.match?(Card.new(:r0)))
   end
 end

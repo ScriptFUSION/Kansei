@@ -9,8 +9,6 @@ module Kansei
       pop n
     end
 
-    def top
-      self[-1]
-    end
+    alias_method :top, :last
   end
 end
