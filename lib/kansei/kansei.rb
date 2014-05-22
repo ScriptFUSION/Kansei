@@ -8,8 +8,8 @@ module Kansei
 
   def start
     game = Game.new
-
     %w(Player\ 1 Player\ 2).each { |name| game.add_player Player.new(name) }
+    game.start
 
     repl = REPL.new(game)
     repl.cmd 'status'

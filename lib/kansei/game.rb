@@ -17,6 +17,12 @@ module Kansei
     def initialize(options = {})
       @max_players = options[:max_players] || 10
       @players = PlayerCollection.new
+
+      reset
+    end
+
+    def reset
+      @players.each { |player| player.reset }
       @discard = Deck.new
       @lock = nil
 
@@ -25,9 +31,16 @@ module Kansei
         # Any card can start the game except Wild Draw 4.
         break unless @deck.top == :xf
       end
+    end
+
+    def start
+      # Randomly select dealer.
+      @players.shuffle!
 
       # Place first card on discard pile.
       @discard.concat @deck.draw
+
+      process_card_action @discard.top if @discard.top.action?
     end
 
     def play(player, card)

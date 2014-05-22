@@ -9,5 +9,9 @@ module Kansei
       @name = name
       @hand = Deck.new
     end
+
+    def reset
+      @hand.clear
+    end
   end
 end
