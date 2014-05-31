@@ -1,6 +1,8 @@
-require_relative 'game'
-require_relative 'player'
-require_relative 'repl'
+#!/usr/bin/env ruby
+
+require_relative '../lib/kansei/game'
+require_relative '../lib/kansei/player'
+require_relative '../lib/kansei/repl'
 
 # Entry point.
 module Kansei
@@ -17,4 +19,4 @@ module Kansei
   end
 end
 
-Kansei.start if $PROGRAM_NAME == __FILE__
+Kansei.start
